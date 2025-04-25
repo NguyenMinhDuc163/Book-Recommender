@@ -18,7 +18,7 @@ def index():
         status_code=200
     )
 
-@app.route('/api/recommendations', methods=['GET'])
+@app.route('/recommendations', methods=['GET'])
 def get_recommendations():
     """API endpoint để lấy đề xuất sách cho người dùng"""
     user_id = request.args.get('user_id', type=int)
