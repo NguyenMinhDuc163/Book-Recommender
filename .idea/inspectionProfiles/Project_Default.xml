@@ -1,0 +1,22 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="9">
+            <item index="0" class="java.lang.String" itemvalue="winshell" />
+            <item index="1" class="java.lang.String" itemvalue="pyinstaller" />
+            <item index="2" class="java.lang.String" itemvalue="screeninfo" />
+            <item index="3" class="java.lang.String" itemvalue="python-dotenv" />
+            <item index="4" class="java.lang.String" itemvalue="pypiwin32" />
+            <item index="5" class="java.lang.String" itemvalue="requests" />
+            <item index="6" class="java.lang.String" itemvalue="pycountry" />
+            <item index="7" class="java.lang.String" itemvalue="pycryptodome" />
+            <item index="8" class="java.lang.String" itemvalue="psutil" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
