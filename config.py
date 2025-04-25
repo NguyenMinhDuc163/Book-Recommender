@@ -1,11 +1,21 @@
 # Cấu hình cơ sở dữ liệu và các tham số ứng dụng
+# DB_CONFIG = {
+#     'dbname': 'book_brain',
+#     'user': 'postgres',
+#     'password': 'NguyenDuc@163',
+#     'host': 'localhost',
+#     'port': '5432'
+# }
+
+
 DB_CONFIG = {
-    'dbname': 'book_brain',
+    'dbname': 'book_brain_db',
     'user': 'postgres',
     'password': 'NguyenDuc@163',
-    'host': 'localhost',
+    'host': '20.2.26.123',
     'port': '5432'
 }
+
 
 # Tham số cài đặt cho hệ thống gợi ý
 RECOMMENDATION_CONFIG = {
