@@ -130,22 +130,20 @@ def get_book_details(book_ids):
     query = f"""
     SELECT 
         b.book_id, 
-        b.title, 
+        b.title,
+        CONCAT('https://gacsach.top/', LOWER(REPLACE(b.title, ' ', '-')), '_', LOWER(a.name), '.full') as url,
         b.image_url,
         b.excerpt,
         b.views,
         b.status,
         b.rating,
+        b.author_id,
         a.name as author_name,
-        c.name as category_name,
-        br.avg_rating,
-        br.review_count,
-        br.favorite_count,
-        br.ranking_score
+        b.category_id,
+        c.name as category_name
     FROM books b
     LEFT JOIN authors a ON b.author_id = a.author_id
     LEFT JOIN categories c ON b.category_id = c.category_id
-    LEFT JOIN book_rankings br ON b.book_id = br.book_id
     WHERE b.book_id IN ({placeholders})
     """
 
@@ -158,9 +156,17 @@ def get_book_details(book_ids):
     result = []
     for book in book_details:
         book_dict = dict(book)
+        # Chuyển đổi các giá trị decimal sang float
         for key, value in book_dict.items():
             if isinstance(value, (np.int64, np.float64)):
                 book_dict[key] = float(value)
+            elif hasattr(value, 'to_eng_string'):  # Kiểm tra nếu là decimal.Decimal
+                book_dict[key] = float(value)
+        
+        # Định dạng rating nếu có
+        if 'rating' in book_dict and book_dict['rating'] is not None:
+            book_dict['rating'] = f"{float(book_dict['rating']):.2f}"
+        
         result.append(book_dict)
 
     return result

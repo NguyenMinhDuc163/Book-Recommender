@@ -2,6 +2,16 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from config import RECOMMENDATION_CONFIG, INTERACTION_WEIGHTS
+from decimal import Decimal
+
+
+def convert_to_float(value):
+    """Chuyển đổi giá trị sang float một cách an toàn"""
+    if isinstance(value, (np.int64, np.float64)):
+        return float(value)
+    elif isinstance(value, Decimal):
+        return float(value)
+    return value
 
 
 class BookRecommender:
@@ -56,8 +66,8 @@ class BookRecommender:
 
             # Tính điểm tương tác
             status = row['reading_status']
-            completion = float(row['completion_rate']) if row['completion_rate'] else 0
-            times_read = row['times_read'] if row['times_read'] else 1
+            completion = convert_to_float(row['completion_rate']) if row['completion_rate'] else 0
+            times_read = convert_to_float(row['times_read']) if row['times_read'] else 1
 
             interaction_score = status_score.get(status, 0) * (completion / 10) * times_read
             book_interactions[book_id]['interaction_score'] += interaction_score
@@ -75,7 +85,7 @@ class BookRecommender:
                 }
 
             # Đánh giá cao (4-5) có trọng số nhiều hơn
-            rating = row['rating']
+            rating = convert_to_float(row['rating'])
             rating_score = (rating / 5) * rating_multiplier
             book_interactions[book_id]['interaction_score'] += rating_score
 
@@ -117,7 +127,7 @@ class BookRecommender:
         for book_id, data in user_profile.items():
             category_id = data['category_id']
             author_id = data['author_id']
-            score = data['interaction_score']
+            score = convert_to_float(data['interaction_score'])
 
             if category_id:
                 category_preferences[category_id] = category_preferences.get(category_id, 0) + score
@@ -168,16 +178,16 @@ class BookRecommender:
             popularity_score = 0
 
             # Điểm đánh giá trung bình
-            avg_rating = book['avg_rating'] if pd.notna(book['avg_rating']) else 0
+            avg_rating = convert_to_float(book['avg_rating']) if pd.notna(book['avg_rating']) else 0
             popularity_score += (avg_rating / 5) * 0.3
 
             # Số lượng đánh giá
-            review_count = book['review_count'] if pd.notna(book['review_count']) else 0
+            review_count = convert_to_float(book['review_count']) if pd.notna(book['review_count']) else 0
             norm_reviews = min(review_count / 100, 1)  # Chuẩn hóa, tối đa 100 đánh giá
             popularity_score += norm_reviews * 0.2
 
             # Số lượt xem
-            views = book['views'] if pd.notna(book['views']) else 0
+            views = convert_to_float(book['views']) if pd.notna(book['views']) else 0
             norm_views = min(views / 1000, 1)  # Chuẩn hóa, tối đa 1000 lượt xem
             popularity_score += norm_views * 0.1
 
@@ -225,7 +235,7 @@ class BookRecommender:
         for _, review in self.reviews_df.iterrows():
             user = review['user_id']
             book = review['book_id']
-            rating = review['rating']
+            rating = convert_to_float(review['rating'])
 
             # Cập nhật hoặc thêm mới
             mask = (user_book_interactions['user_id'] == user) & (user_book_interactions['book_id'] == book)
@@ -278,7 +288,7 @@ class BookRecommender:
                     if book not in recommendations:
                         recommendations[book] = 0
                     # Trọng số bằng độ tương tự * điểm tương tác
-                    recommendations[book] += similarity * score
+                    recommendations[book] += convert_to_float(similarity) * convert_to_float(score)
 
         # Chuyển đổi sang danh sách và sắp xếp
         recommendation_list = []
@@ -337,7 +347,7 @@ class BookRecommender:
                     'category_id': rec['category_id'],
                     'author_id': rec['author_id']
                 }
-            hybrid_recs[book_id]['score'] += rec['score'] * hybrid_content_weight
+            hybrid_recs[book_id]['score'] += convert_to_float(rec['score']) * hybrid_content_weight
 
         # Trộn đề xuất dựa trên lọc cộng tác
         for rec in collab_recs:
@@ -350,7 +360,7 @@ class BookRecommender:
                     'category_id': rec['category_id'],
                     'author_id': rec['author_id']
                 }
-            hybrid_recs[book_id]['score'] += rec['score'] * hybrid_collab_weight
+            hybrid_recs[book_id]['score'] += convert_to_float(rec['score']) * hybrid_collab_weight
 
         # Chuyển đổi thành danh sách và sắp xếp
         result = list(hybrid_recs.values())
@@ -375,7 +385,7 @@ class BookRecommender:
             recommendations.append({
                 'book_id': int(book['book_id']),
                 'title': book['title'],
-                'score': float(book['ranking_score']) if pd.notna(book['ranking_score']) else 0,
+                'score': float(convert_to_float(book['ranking_score'])) if pd.notna(book['ranking_score']) else 0,
                 'category_id': int(book['category_id']) if pd.notna(book['category_id']) else None,
                 'author_id': int(book['author_id']) if pd.notna(book['author_id']) else None
             })

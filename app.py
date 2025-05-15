@@ -25,12 +25,13 @@ def get_recommendations():
     limit = request.args.get('limit', default=RECOMMENDATION_CONFIG['default_limit'], type=int)
 
     if not user_id:
-        return standardize_response(
-            data=[],
-            message="Thiếu thông tin user_id",
-            status_code=400,
-            error="Missing user_id parameter"
-        )
+        return {
+            "code": 400,
+            "data": [],
+            "status": "error",
+            "message": "Thiếu thông tin user_id",
+            "error": "Missing user_id parameter"
+        }
 
     try:
         # Lấy dữ liệu cần thiết
@@ -59,19 +60,22 @@ def get_recommendations():
                     rec.update(detail)
                     break
 
-        return standardize_response(
-            data=recommendations,
-            message="Lấy gợi ý sách thành công",
-            status_code=200
-        )
+        return {
+            "code": 200,
+            "data": recommendations,
+            "status": "success",
+            "message": "Danh sách sách hot đã được truy xuất thành công.",
+            "error": ""
+        }
 
     except Exception as e:
-        return standardize_response(
-            data=[],
-            message="Lỗi khi lấy gợi ý sách",
-            status_code=500,
-            error=str(e)
-        )
+        return {
+            "code": 500,
+            "data": [],
+            "status": "error",
+            "message": "Lỗi khi lấy gợi ý sách",
+            "error": str(e)
+        }
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
